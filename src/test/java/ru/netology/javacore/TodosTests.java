@@ -41,7 +41,7 @@ public class TodosTests {
         String oneTask = "To solve the task";
         String twoTask = "Go to bed";
         String threeTask = "Have dinner";
-        String expected = "Go to bed Have dinner To solve the task ";
+        String expected = "Go to bed Have dinner To solve the task";
 
         sut.addTask(oneTask);
         sut.addTask(twoTask);

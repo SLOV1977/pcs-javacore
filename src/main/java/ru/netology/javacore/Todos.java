@@ -1,6 +1,7 @@
 package ru.netology.javacore;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Todos {
     String type;
@@ -17,14 +18,9 @@ public class Todos {
     }
 
     public String getAllTasks() {
-        StringBuilder sb = new StringBuilder();
-        String[] array = new String[todos.size()];
-        todos.toArray(array);
-        Arrays.sort(array);
-        for (String task : array) {
-            sb.append(task + " ");
-        }
-        return sb.toString();
+        return todos.stream()
+                .sorted(Comparator.naturalOrder())
+                .collect(Collectors.joining(" "));
     }
 
     public String getType() {
