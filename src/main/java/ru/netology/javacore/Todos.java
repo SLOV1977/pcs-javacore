@@ -4,8 +4,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Todos {
-    String type;
-    String task;
 
     private final List<String> todos = new ArrayList<>();
 
@@ -22,13 +20,4 @@ public class Todos {
                 .sorted(Comparator.naturalOrder())
                 .collect(Collectors.joining(" "));
     }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getTask() {
-        return task;
-    }
-
 }

@@ -1,7 +1,7 @@
 package ru.netology.javacore;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -20,29 +20,35 @@ public class TodoServer {
     public void start() throws IOException {
         System.out.println("Starting server at " + port + "...");
 
-        ServerSocket serverSocket = new ServerSocket(port);
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
 
-        while (true) {
-            try (
-                    Socket socket = serverSocket.accept();
-                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))
-            ) {
-                String incomingTask = in.readLine();
-                Gson gson = new GsonBuilder().create();
-                gson.toJson(incomingTask);
-                Todos task = gson.fromJson(incomingTask, Todos.class);
+            while (true) {
 
-                if (task.getType().equals("ADD")) {
-                    todos.addTask(task.getTask());
-                } else if (task.getType().equals("REMOVE")) {
-                    todos.removeTask(task.getTask());
+                try (
+                        Socket socket = serverSocket.accept();
+                        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                ) {
+                    final String inputJsonTask = in.readLine();
+                    final JsonObject root = JsonParser.parseString(inputJsonTask).getAsJsonObject();
+
+                    String type = root.get("type").toString().replaceAll("\"", "");
+                    String task = root.get("task").toString().replaceAll("\"", "");
+
+                    switch (type) {
+                        case "ADD":
+                            todos.addTask(task);
+                            break;
+                        case "REMOVE":
+                            todos.removeTask(task);
+                            break;
+                    }
+                    out.println("Tasks: " + todos.getAllTasks());
                 }
-                out.println(todos.getAllTasks());
-            } catch (IOException e) {
-                System.out.println("I can't start the server");
-                e.printStackTrace();
             }
+        } catch (IOException e) {
+            System.out.println("Can't start server");
+            e.printStackTrace();
         }
     }
 }
